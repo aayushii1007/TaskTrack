@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskTrack | Task Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="brand-mark">TT</div>
+      <div>
+        <p class="eyebrow">PERSONAL PRODUCTIVITY</p>
+        <h1>TaskTrack</h1>
+        <p class="subtitle">A simple space to organize your work.</p>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="Task summary">
+      <article class="stat"><span>Total tasks</span><strong>{{ total }}</strong></article>
+      <article class="stat"><span>Pending</span><strong>{{ pending }}</strong></article>
+      <article class="stat"><span>Completed</span><strong>{{ completed }}</strong></article>
+    </section>
+
+    <section class="panel">
+      <h2>Add a task</h2>
+      <form class="add-form" action="{{ url_for('add_task') }}" method="post">
+        <label class="sr-only" for="title">Task title</label>
+        <input id="title" name="title" type="text" maxlength="160"
+               placeholder="What needs to get done?" required>
+        <button type="submit">Add task</button>
+      </form>
+    </section>
+
+    <section class="panel task-panel">
+      <div class="section-heading">
+        <h2>Your tasks</h2>
+        <span class="count">{{ total }} total</span>
+      </div>
+      {% if tasks %}
+        <ul class="task-list">
+          {% for task in tasks %}
+            <li class="task {% if task.completed %}is-complete{% endif %}">
+              <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="post">
+                <button class="check" type="submit" aria-label="Toggle completion">
+                  {% if task.completed %}✓{% endif %}
+                </button>
+              </form>
+              <span class="task-title">{{ task.title }}</span>
+              <span class="status">{% if task.completed %}Done{% else %}Pending{% endif %}</span>
+              <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post">
+                <button class="delete" type="submit" aria-label="Delete task" title="Delete task">×</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty">
+          <div class="empty-icon">✓</div>
+          <h3>No tasks yet</h3>
+          <p>Add your first task above to get started.</p>
+        </div>
+      {% endif %}
+    </section>
+    <footer>TaskTrack · Built with Flask · Containerized with Docker</footer>
+  </main>
+</body>
+</html>
